@@ -16,7 +16,8 @@ services:
     image: ikmuge/frontend
     container_name: ikmuge_frontend
     environment:
-      - PORT=8000
+      # - PORT=8000
+      - ENDPOINT=http://localhost:9000/api
     ports:
      - "8000:8000"
-    #  - "80:8000"
+     - "80:8000"
