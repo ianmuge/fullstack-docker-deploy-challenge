@@ -1,0 +1,22 @@
+version: '2'
+services:
+  backend:
+    build:
+      context: backend
+    image: ikmuge/backend
+    container_name: ikmuge_backend
+    environment:
+      - PORT=9000
+      - APPID=e257c1cee113fe3b59f59c71f09c069f
+    ports:
+     - "9000:9000"
+  frontend:
+    build:
+      context: frontend
+    image: ikmuge/frontend
+    container_name: ikmuge_frontend
+    environment:
+      - PORT=8000
+    ports:
+     - "8000:8000"
+    #  - "80:8000"
