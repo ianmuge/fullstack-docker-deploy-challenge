@@ -14,7 +14,7 @@
       command: "rm -rf {{item}}"
       ignore_errors: yes
       loop:
-        - "{{deploy_directory}}/*"
+        - "{{deploy_directory}}*"
   when: "initialize != false"
 - name: get updated definition
   git:
@@ -34,7 +34,7 @@
   command: "docker-compose build"
   args:
     chdir: "{{deploy_directory}}"
-- name: Start services
-  command: "docker-compose up"
-  args:
-    chdir: "{{deploy_directory}}"
+# - name: Start services
+#   command: "docker-compose up -d"
+#   args:
+#     chdir: "{{deploy_directory}}"

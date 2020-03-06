@@ -1,12 +1,14 @@
 FROM node:slim
 LABEL maintainer="Ian Muge <ian.muge@gmail.com>"
 
-RUN mkdir -p /app/node_modules
-RUN chown -R node:node /app
-WORKDIR /app
+ARG W_DIR=/home/node/app
+RUN mkdir -p ${W_DIR}
+RUN chown -R node:node ${W_DIR}
+
+WORKDIR ${W_DIR}
 COPY package*.json ./
 USER node
-RUN npm install
+RUN npm install --silent
 COPY --chown=node:node . .
 EXPOSE 8000
 ENTRYPOINT ["npm"]

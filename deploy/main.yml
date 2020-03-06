@@ -4,7 +4,7 @@
   user: ec2-user
   gather_facts: true
   vars:
-    initialize: true
+    initialize: false
   pre_tasks:
     - name: Run update
       yum:
