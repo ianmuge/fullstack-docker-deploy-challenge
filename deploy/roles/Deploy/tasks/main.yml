@@ -1,0 +1,40 @@
+- name: initialize
+  block:
+    - name: ensure directory exists
+      become: true
+      command: "mkdir -p {{deploy_directory}}"
+    - name: change permissions and ownership
+      become: true
+      file:
+        path: "{{deploy_directory}}"
+        owner: "{{ansible_user_id}}"
+        group: "{{ansible_user_id}}"
+        recurse: yes
+    - name: clean webroot
+      command: "rm -rf {{item}}"
+      ignore_errors: yes
+      loop:
+        - "{{deploy_directory}}/*"
+  when: "initialize != false"
+- name: get updated definition
+  git:
+    repo: "{{git_repo}}"
+    dest: "{{deploy_directory}}"
+    clone: yes
+    force: yes
+    recursive: no
+    update: yes
+    track_submodules: no
+    version: "{{code_env}}"
+- name: Tear down existing services
+  command: "docker-compose down"
+  args:
+    chdir: "{{deploy_directory}}"
+- name: Create services
+  command: "docker-compose build"
+  args:
+    chdir: "{{deploy_directory}}"
+- name: Start services
+  command: "docker-compose up"
+  args:
+    chdir: "{{deploy_directory}}"

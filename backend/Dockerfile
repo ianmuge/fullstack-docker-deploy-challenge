@@ -1,11 +1,14 @@
-FROM node:latest
+FROM node:slim
 LABEL maintainer="Ian Muge <ian.muge@gmail.com>"
-RUN mkdir -p /home/node/app/node_modules 
-RUN chown -R node:node /home/node/app
-WORKDIR /home/node/app
+
+RUN mkdir -p /app
+WORKDIR /app
+RUN chown -R node:node /app
 COPY package*.json ./
 USER node
-RUN npm install
+RUN npm install --silent
 COPY --chown=node:node . .
+RUN chown -R node:node /app
 EXPOSE 9000
-CMD [ "npm", "start"]
+ENTRYPOINT ["npm"]
+CMD ["start"]

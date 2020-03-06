@@ -1,15 +1,18 @@
-version: '2'
+version: '3'
 services:
   backend:
     build:
-      context: backend
+      context: ./backend
     image: ikmuge/backend
     container_name: ikmuge_backend
+    ports:
+     - "9000:9000"
+    volumes:
+      - .backend/:/app
+      - /app/node_modules
     environment:
       - PORT=9000
       - APPID=e257c1cee113fe3b59f59c71f09c069f
-    ports:
-     - "9000:9000"
   frontend:
     build:
       context: frontend
@@ -18,6 +21,11 @@ services:
     environment:
       # - PORT=8000
       - ENDPOINT=http://localhost:9000/api
+    volumes:
+      - .frontend/:/app
+      - /app/node_modules
     ports:
      - "8000:8000"
      - "80:8000"
+    depends_on:
+      - backend

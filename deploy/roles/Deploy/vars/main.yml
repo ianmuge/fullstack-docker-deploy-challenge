@@ -1,0 +1,7 @@
+---
+# working_directory: "../../../" 
+deploy_directory: "/var/www/html/"
+gituser: "{{ lookup('env','GITUSER') }}"
+gitkey: "{{ lookup('env','GITKEY') }}"
+git_repo: "https://{{gitkey}}@github.com/muge13/interview-eficode.git"
+code_env: master

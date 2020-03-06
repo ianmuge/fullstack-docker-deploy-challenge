@@ -1,0 +1,76 @@
+---
+- name: set selinux permissive
+  selinux:
+    policy: targeted
+    state: permissive
+- name: epel-release
+  yum:
+    name: "{{item}}"
+    state: present
+  loop:
+    - http://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ansible_distribution_major_version}}.noarch.rpm
+  when: "ansible_distribution_major_version|int < 8"
+- name: install base packages
+  yum:
+    name: "{{item}}"
+    state: present
+  loop:
+    - firewalld
+    - git
+    - zip
+    - telnet
+    - sysstat
+    - python2-pip
+  ignore_errors: true
+- name: start and enable service
+  service:
+    name: firewalld
+    enabled: yes
+    state: started
+- name: allow ports
+  firewalld:
+    port: "{{ item}}"
+    permanent: true
+    zone: public
+    state: enabled
+    immediate: yes
+  loop:
+    - "{{http_port}}/tcp"
+- name: remove base docker packages
+  yum:
+    name: "{{item}}"
+    state: absent
+  loop:
+    - docker-common 
+    - docker
+    - docker-engine
+- name: add repo
+  yum_repository:
+    name: docker-ce-stable
+    description: Docker CE Stable - $basearch
+    baseurl: "https://download.docker.com/linux/centos/{{ansible_distribution_major_version}}/$basearch/stable"
+    gpgcheck: yes
+    gpgkey: https://download.docker.com/linux/centos/gpg
+    enabled: yes
+- name: install docker
+  yum:
+    name: "{{item}}"
+    state: present
+  loop:
+    - http://mirror.centos.org/centos/7/extras/x86_64/Packages/container-selinux-2.107-3.el7.noarch.rpm
+    - docker-ce
+    - https://download-ib01.fedoraproject.org/pub/epel/7/x86_64/Packages/d/docker-compose-1.18.0-4.el7.noarch.rpm
+- name: install docker-py
+  pip:
+    name: "{{item}}"
+    state: present
+  loop:
+    # - docker-compose
+    - docker-py
+- name: Add current user to docker group
+  shell: "usermod -aG docker {{ansible_user_id}}"
+- name: start and enable service
+  service:
+    name: docker
+    enabled: yes
+    state: restarted

@@ -1,0 +1,23 @@
+---
+- name: magento deployment scripts
+  hosts: tag_service_Test
+  user: ec2-user
+  gather_facts: true
+  vars:
+    initialize: true
+  pre_tasks:
+    - name: Run update
+      yum:
+        name: "*"
+        state: latest
+      become: yes
+  roles:
+    # - name: Setup
+    #   become: yes
+    - name: Deploy
+  post_tasks:
+    # - name: check that service is responding
+    #   uri:
+    #     url: "http://localhost"
+    #     return_content: yes
+    #     status_code: 200,302
