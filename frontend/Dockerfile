@@ -1,4 +1,4 @@
-FROM node:latest
+FROM node:lts
 LABEL maintainer="Ian Muge <ian.muge@gmail.com>"
 
 ARG W_DIR=/home/node/app

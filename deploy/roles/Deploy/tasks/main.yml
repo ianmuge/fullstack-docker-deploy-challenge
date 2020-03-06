@@ -1,3 +1,5 @@
+- name: clean up docker artifacts
+  shell: "docker container prune -f && docker image prune -f"
 - name: initialize
   block:
     - name: ensure directory exists
