@@ -8,8 +8,8 @@ services:
     ports:
      - "9000:9000"
     volumes:
-      - .backend/:/app
-      - /app/node_modules
+      - ./backend/:/home/node/app
+      - /home/node/app/node_modules
     environment:
       - PORT=9000
       - APPID=e257c1cee113fe3b59f59c71f09c069f
@@ -19,11 +19,11 @@ services:
     image: ikmuge/frontend
     container_name: ikmuge_frontend
     environment:
-      # - PORT=8000
+      - PORT=8000
       - ENDPOINT=http://localhost:9000/api
-    volumes:
-      - .frontend/:/app
-      - /app/node_modules
+    # volumes:
+      - ./frontend/:/home/node/app
+      - /home/node/app/node_modules
     ports:
      - "8000:8000"
      - "80:8000"
