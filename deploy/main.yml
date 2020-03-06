@@ -12,12 +12,12 @@
         state: latest
       become: yes
   roles:
-    # - name: Setup
-    #   become: yes
+    - name: Setup
+      become: yes
     - name: Deploy
   post_tasks:
-    # - name: check that service is responding
-    #   uri:
-    #     url: "http://localhost"
-    #     return_content: yes
-    #     status_code: 200,302
+    - name: check that service is responding
+      uri:
+        url: "http://localhost"
+        return_content: yes
+        status_code: 200,302

@@ -34,7 +34,7 @@
   command: "docker-compose build"
   args:
     chdir: "{{deploy_directory}}"
-# - name: Start services
-#   command: "docker-compose up -d"
-#   args:
-#     chdir: "{{deploy_directory}}"
+- name: Start services
+  command: "docker-compose up -d"
+  args:
+    chdir: "{{deploy_directory}}"
