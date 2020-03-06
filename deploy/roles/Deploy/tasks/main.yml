@@ -28,6 +28,12 @@
     update: yes
     track_submodules: no
     version: "{{code_env}}"
+- name: change backend url
+  replace:
+    path: "{{deploy_directory}}/docker-compose.yml"
+    regexp: 'localhost'
+    replace: "{{hostvars[inventory_hostname]['ansible_default_ipv4']['address']}}"
+    backup: no
 - name: Tear down existing services
   command: "docker-compose down"
   args:

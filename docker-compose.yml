@@ -20,7 +20,7 @@ services:
     container_name: ikmuge_frontend
     environment:
       - PORT=8000
-      # - ENDPOINT=http://localhost:9000/api
+      - ENDPOINT=http://localhost:9000/api
     volumes:
       - ./frontend:/home/node/app
       - /home/node/app/node_modules
