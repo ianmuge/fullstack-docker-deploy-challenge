@@ -1,4 +1,4 @@
-FROM node:lts
+FROM node:lts-alpine
 LABEL maintainer="Ian Muge <ian.muge@gmail.com>"
 
 ARG W_DIR=/home/node/app
