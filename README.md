@@ -1,77 +1,58 @@
 # Weatherapp
-
 There was a beautiful idea of building an app that would show the upcoming weather. The developers wrote a nice backend and a frontend following the latest principles and - to be honest - bells and whistles. However, the developers did not remember to add any information about the infrastructure or even setup instructions in the source code.
 
-Luckily we now have [docker compose](https://docs.docker.com/compose/) saving us from installing the tools on our computer, and making sure the app looks (and is) the same in development and in production. All we need is someone to add the few missing files!
+Luckily we now have docker compose saving us from installing the tools on our computer, and making sure the app looks (and is) the same in development and in production. All we need is someone to add the few missing files!
 
 ## Prerequisites
-
-* An [openweathermap](http://openweathermap.org/) API key.
-
-## Returning your solution
-
-### Via github
-
-* Make a copy of this repository in your own github account (do not fork unless you really want to be public).
-* Create a personal repository in github.
-* Make changes, commit them, and push them in your own repository.
-* Send us the url where to find the code.
-
-### Via tar-package
-
-* Clone this repository.
-* Make changes and **commit them**.
-* Create a **.tgz** -package including the **.git**-directory, but excluding the **node_modules**-directories.
-* Send us the archive.
-
-## Exercises
-
-Here are some things in different categories that you can do to make the app better. Before starting you need to get yourself an API key to make queries in the [openweathermap](http://openweathermap.org/). You can run the app locally using `npm i && npm start`.
-
+- An openweathermap API key. This is set on the docker-compose.yml file on the project root
+- You have ansible installed
+- You have your AWS ec2 key pair, access_key and Secret key
+- You have a RHEL 7 instance provisioned on AWS with base requirements installed. You can use the repos below to provision and set up the instance(s). _The provision used in the 
+    - https://github.com/muge13/terraform-provision-aws-vpc
+    - https://github.com/muge13/terraform-provision-aws-ec2
+    - https://github.com/muge13/ansible-configure-base
+## Provision (cloud)
+Terraform script to create AWS EC2 instances per availability zone
+### Instructions
+Export aws credentials to the working environment
+ ```
+export AWS_ACCESS_KEY_ID="{}" &&  export AWS_SECRET_ACCESS_KEY="{}" && export AWS_REGION="eu-west-2"
+```
+Replace the variables in the command to suite your environment.
+```
+terraform init
+terraform plan -var="vpc_id={{vpc-id}}" -var="key_name={{key-name}}"
+terraform apply -var="vpc_id={{vpc-id}}" -var="key_name={{key-name}}"
+terraform output
+```
+You can modify these common variables (Others are available on the variables.tf file):
+- vpc-id
+- aws_region
+- key-name
+- zone
+- instance_count (Per availability zone)
+- service
+- role
+- instance_type
+- service (custom tag)
+- role (custom tag)
+- block_device
+To destroy the instances (Given that the instance doesn't have termination protection enabled)
+```
+terraform destroy -var="vpc_id={{vpc-id}}" -var="key_name={{key-name}}"
+```
+## Ansible
 ### Docker
-
-*Docker containers are central to any modern development initiative. By knowing how to set up your application into containers and make them interact with each other, you have learned a highly useful skill.*
-
-* Add **Dockerfile**'s in the *frontend* and the *backend* directories to run them virtually on any environment having [docker](https://www.docker.com/) installed. It should work by saying e.g. `docker build -t weatherapp_backend . && docker run --rm -i -p 9000:9000 --name weatherapp_backend -t weatherapp_backend`. If it doesn't, remember to check your api key first.
-
-* Add a **docker-compose.yml** -file connecting the frontend and the backend, enabling running the app in a connected set of containers.
-
-* The developers are still keen to run the app and its pipeline on their own computers. Share the development files for the container by using volumes, and make sure the containers are started with a command enabling hot reload.
-
-### Node and React development
-
-*Node and React applications are highly popular technologies. Understanding them will give you an advantage in front- and back-end development projects.*
-
-* The application now only reports the current weather. It should probably report the forecast e.g. a few hours from now. (tip: [openweathermap api](https://openweathermap.org/forecast5))
-
-* There are [eslint](http://eslint.org/) errors. Sloppy coding it seems. Please help.
-
-* The app currently reports the weather only for location defined in the *backend*. Shouldn't it check the browser location and use that as the reference for making a forecast? (tip: [geolocation](https://developer.mozilla.org/en-US/docs/Web/API/Geolocation/Using_geolocation))
-
-### Testing
-
-*Test automation is key in developing good quality applications. Finding bugs in early stages of development is valuable in any software development project. With Robot Framework you can create integration tests that also serve as feature descriptions, making them exceptionally useful.*
-
-* Create automated tests for the application. (tip: [mocha](https://mochajs.org/))
-
-* Create [Robot Framework](http://robotframework.org/) integration tests. Hint: Start by creating a third container that gives expected weather data and direct the backend queries there by redefining the **MAP_ENDPOINT**.
-
-### Cloud
-
-*The biggest trend of recent times is developing, deploying and hosting your applications in cloud. Knowing cloud -related technologies is essential for modern IT specialists.*
-
-* Set up the weather service in a free cloud hosting service, e.g. [AWS](https://aws.amazon.com/free/) or [Google Cloud](https://cloud.google.com/free/).
-
-### Ansible
-
-*Automating deployment processes saves a lot of valuable time and reduces chances of costly errors. Infrastructure as Code removes manual steps and allows people to concentrate on core activities.*
-
-* Write [ansible](http://docs.ansible.com/ansible/intro.html) playbooks for installing [docker](https://www.docker.com/) and the app itself.
-
-### Documentation
-
-*Good documentation benefits everyone.*
-
-* Remember to update the README
-
-* Use descriptive names and add comments in the code when necessary
+Docker is installed and Setup as part of the Ansible setup roles.
+We add Dockerfile(s) and a docker-compose.yml file to define how to roll out the container images. 
+The images are built on top of node:lts-alpine and the volumes linked and mounted to the deploy-folder on the running server.
+The frontend is bound on port 80 and 8000, the backend is bound on port 9000. 
+### Deployment (Ansible)
+The deployment is run as part of the ansible Deploy roles.
+```
+ansible-playbook -i deploy/ec2.py -T 60 -f 100 --private-key=~/{user}.pem deploy/main.yml
+```
+#### Process:
+- cleans up and initializes the deployment folder
+- pulls in the latest code from the repo and 
+- runs the docker containers based the docker-compose setup

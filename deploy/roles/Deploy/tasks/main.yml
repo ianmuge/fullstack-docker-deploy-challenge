@@ -1,7 +1,8 @@
-- name: clean up docker artifacts
-  shell: "docker container prune -f && docker image prune -f"
+
 - name: initialize
   block:
+    - name: clean up docker artifacts
+      shell: "docker container prune -f && docker image prune -f"
     - name: ensure directory exists
       become: true
       command: "mkdir -p {{deploy_directory}}"

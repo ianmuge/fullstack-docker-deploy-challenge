@@ -36,7 +36,8 @@
     immediate: yes
   loop:
     - "{{http_port}}/tcp"
-    - "{{service_port}}/tcp"
+    - "{{frontend_port}}/tcp"
+    - "{{backend_port}}/tcp"
 - name: remove base docker packages
   yum:
     name: "{{item}}"
